@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Title</title>
+    <title>Users list</title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.css" rel="stylesheet">
@@ -21,6 +21,9 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
+
+
+
   </head>
 
   <body>
@@ -64,11 +67,11 @@
 
       <!-- Begin page content -->
       <div class="container">
-        <div class="page-header">
-          <h1>Sticky footer with fixed navbar</h1>
-        </div>
-        <p class="lead">Pin a fixed-height footer to the bottom of the viewport in desktop browsers with this custom HTML and CSS. A fixed navbar has been added within <code>#wrap</code> with <code>padding-top: 60px;</code> on the <code>.container</code>.</p>
-        <p>Back to <a href="../sticky-footer">the default sticky footer</a> minus the navbar.</p>
+        
+		    <h1>List of Users</h1>
+        <div id="list"></div>
+		    
+
       </div>
     </div>
 
@@ -81,8 +84,106 @@
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- Placed at the end of the document so the pages load faster 
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>-->
+
+
+    <script>
+      function getXmlHttp(){
+        var xmlhttp;
+        try {
+        xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+        } catch (e) {
+        try {
+          xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        } catch (E) {
+          xmlhttp = false;
+        }
+        }
+        if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
+          xmlhttp = new XMLHttpRequest();
+        }
+        return xmlhttp;
+      }
+
+      function addEvent(elem, evType, fn) {
+        if (elem.addEventListener) {
+          elem.addEventListener(evType, fn, false);
+        }
+        else if (elem.attachEvent) {
+          elem.attachEvent('on' + evType, fn);
+        }
+        else {
+          elem['on' + evType] = fn;
+        }
+      }
+
+      function byId(node) {
+          return typeof node == 'string' ? document.getElementById(node) : node;
+      }
+
+      function deleteRow(id) {
+        debugger;
+          var xhr = getXmlHttp();
+              xhr.open('DELETE', 'http://10.10.108.113:3000/user/' + id, true);
+              xhr.send(null);
+              debugger;
+              req.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                  if (xhr.status == 200) {
+                    var result = xhr.responseJSON = JSON.parse(xhr.responseText), rows = '';
+
+                    if (result != false) {
+                      for (var i = 0, len = result.length; i < len; i++) {
+                            rows += '<tr><td>' + (i + 1) + '</td><td>' + result[i].name + '</td><td>' + result[i].email + '</td> \
+                              <td> \
+                                <a href="#delete" onclick="deleteRow(' + result[i]._id + ')">Удалить</a> \
+                                <a href=""></a> \
+                                <a href=""></a> \
+                              </td> \
+                            </tr>';
+                        }
+                    }
+
+                    byId('list').innerHTML = '<table id="users"><tr><th>№</th><th>Имя</th><th>Е-мэйл</th><th>Actions</th>' + rows + '</table>';
+
+
+
+                  }
+                }
+              }
+      }
+
+      window.onload = function() {
+          var req = getXmlHttp();
+              req.open('GET', 'http://10.10.108.113:3000/users', true);
+              req.send(null);
+              req.onreadystatechange = function() {
+                if (req.readyState == 4) {
+                  if (req.status == 200) {
+                    var result = req.responseJSON = JSON.parse(req.responseText), rows = '';
+                    if (result != false) {
+                      for (var i = 0, len = result.length; i < len; i++) {
+                            rows += '<tr><td>' + (i + 1) + '</td><td>' + result[i].name + '</td><td>' + result[i].email + '</td> \
+                              <td> \
+                                <a href="#delete" onclick="deleteRow("' + result[i]._id + '")">Удалить</a> \
+                                <a href=""></a> \
+                                <a href=""></a> \
+                              </td> \
+                            </tr>';
+                        }
+                    }
+
+                    byId('list').innerHTML = '<table id="users"><tr><th>№</th><th>Имя</th><th>Е-мэйл</th><th>Actions</th>' + rows + '</table>';
+
+
+
+                  }
+                }
+              };
+      };
+  
+    </script>
   </body>
 </html>
